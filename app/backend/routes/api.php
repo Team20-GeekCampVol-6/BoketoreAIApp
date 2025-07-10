@@ -32,5 +32,5 @@ Route::get('/problem', [ProblemController::class, 'generate']);
 Route::get('/lectures', [LectureController::class, 'index']);
 
 // 【Bさん担当】回答評価API（Bさんの作業場所）
-// Route::post('/evaluate', [EvaluationController::class, 'evaluate']);
+Route::post('/evaluate', [EvaluationController::class, 'evaluate']);
 

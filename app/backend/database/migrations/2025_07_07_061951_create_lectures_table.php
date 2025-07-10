@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('lectures', function (Blueprint $table) {
             $table->id();
+            $table->text("problem_statement");
+            $table->text("user_answer");
+            $table->text("evaluation");
             $table->timestamps();
         });
     }
