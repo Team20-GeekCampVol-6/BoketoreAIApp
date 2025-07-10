@@ -2,28 +2,71 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Lecture;
+use App\Services\EvaluationService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 
 class EvaluationController extends Controller
 {
+
+    protected $evaluationService;
+
+    public function __construct(EvaluationService $evaluationService)
+    {
+        // サービスクラスのインスタンスを注入
+        $this->evaluationService = $evaluationService;
+    }
+
+
     public function evaluate(Request $request)//自動でインスタンスを作成し引数に渡す
     {
-        // リクエストから問題文とユーザーの回答を取得
-        $problemStatement = $request->input('problem_statement');
+        $problemStatement = $request->input('problem_statement');//URLの場合?param=val //FormDataの場合param=val
+        $modelAnswer = $request->input('model_answer');
         $userAnswer = $request->input('user_answer');
 
-        // ダミーの評価結果
-        $evaluation = "Correct";
+        // AIによる評価を実行
+        //evaluateとaiResponseを配列で返す
+        $evaluationData = $this->evaluationService->evaluateWithAI(
+            $problemStatement,
+            $modelAnswer,
+            $userAnswer
+        );
 
-        // lecturesテーブルに保存
-        $lecture = new \App\Models\Lecture();
-        $lecture->problem_statement = $problemStatement;
+        // エラーがあればエラーレスポンスを返す
+        if (isset($evaluationData['error'])) {
+            return response()->json($evaluationData, 500);
+        }
+
+        // 評価結果をDBに保存
+        $lecture = $this->saveEvaluation($problemStatement, $modelAnswer, $userAnswer, $evaluationData);
+
+        // フロントエンドにJSON形式で返す
+        return response()->json($lecture);
+    }
+
+
+    /**
+     * 評価結果をデータベースに保存する
+     *
+     * @param string $problem
+     * @param string $answer
+     * @param string $modelAnswer
+     * @param array $evaluationData
+     * @return \App\Models\Lecture
+     */
+    private function saveEvaluation(string $problem, string $modelAnswer, string $userAnswer, array $evaluationData): \App\Models\Lecture
+    {
+        $lecture = new Lecture();
+        $lecture->problem_statement = $problem;
         $lecture->user_answer = $userAnswer;
-        $lecture->evaluation = $evaluation;
+        $lecture->model_answer = $modelAnswer;
+        $lecture->evaluation = $evaluationData['evaluation'];//評価
+        $lecture->ai_response = $evaluationData['aiResponse'];//AIの応答
         $lecture->save();
 
-        // 保存した内容をJSONで返す
-        return response()->json($lecture);
+        return $lecture;
     }
 }
 
