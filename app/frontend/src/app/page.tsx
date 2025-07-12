@@ -3,6 +3,8 @@ import React, { useState, useRef, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import ChatMessage from "../components/ChatMessage";
 import InputForm from "../components/InputForm";
+import DoyaAnimation from "@/components/DoyaAnimation";
+import { Evaluation } from "@/interface/Lecture";
 
 const initialMessages = [
   {
@@ -23,6 +25,9 @@ export default function Home() {
     evaluation: "",
     aiResponse: "",
   });
+
+  const isFinished = lectureData.evaluation !== "";
+
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -76,13 +81,20 @@ export default function Home() {
         const evaluateJson = await res.json();
         console.log(evaluateJson);
 
+        setLectureData((prev) => ({
+          ...prev,
+          userAnswer: text,
+          evaluation: evaluateJson["evaluation"],
+          aiResponse: evaluateJson["ai_response"],
+        }));
+
         setMessages((prev) => [
           ...prev,
           {
             message: `${
               evaluateJson
                 ? `評価：${evaluateJson["evaluation"]}\n
-                コメント：${evaluateJson["ai_response"]}`
+                コメント：${evaluateJson.ai_response}`
                 : "AIの返答がありません"
             }`,
             isUser: false,
@@ -119,6 +131,11 @@ export default function Home() {
           {messages.map((msg, idx) => (
             <ChatMessage key={idx} message={msg.message} isUser={msg.isUser} />
           ))}
+
+          {isFinished && (
+            <DoyaAnimation evaluate={lectureData.evaluation as Evaluation} />
+          )}
+
           {loading && <ChatMessage message="AIが考え中..." />}
           <div ref={chatEndRef} />
         </main>
