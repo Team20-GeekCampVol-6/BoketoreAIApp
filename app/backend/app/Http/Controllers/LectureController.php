@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Lecture;
 use Illuminate\Http\Request;
 
 class LectureController extends Controller
@@ -12,7 +13,7 @@ class LectureController extends Controller
         // 例えば、Lectureモデルを使ってデータベースから履歴を取得するなど。
 
         // 今回はダミーデータを返す例です。
-        $lectures = Lecture::all(); // ここでLectureモデルを使ってデータベースから履歴を取得することもできます。
+        $lectures = Lecture::all();
 
         return response()->json($lectures);
     }
