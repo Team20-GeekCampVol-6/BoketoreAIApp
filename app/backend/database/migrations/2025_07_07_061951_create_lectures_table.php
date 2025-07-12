@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('lectures', function (Blueprint $table) {
             $table->id();
+            $table->text("problem_statement");
+            $table->text("model_answer");
+            $table->text("user_answer");
+            $table->text("evaluation");
+            $table->text("ai_response")->nullable(); // AIの応答を保存するカラムを追加
             $table->timestamps();
         });
     }
