@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
@@ -16,6 +15,14 @@ export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [messages, setMessages] = useState(initialMessages);
   const [loading, setLoading] = useState(false);
+  const [theme, setTheme] = useState("");
+  const [lectureData, setLectureData] = useState({
+    problemStatement: "",
+    modelAnswer: "",
+    userAnswer: "",
+    evaluation: "",
+    aiResponse: "",
+  });
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -26,12 +33,63 @@ export default function Home() {
     setMessages((prev) => [...prev, { message: text, isUser: true }]);
     setLoading(true);
     // API連携部分（仮実装）
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        { message: `「${text}」についての回答をします...\n(ここにAIの返答が入ります)`, isUser: false },
-      ]);
-      setLoading(false);
+    setTimeout(async () => {
+      if (!theme) {
+        setTheme(text);
+        const res = await fetch(
+          `http://localhost:8000/api/problem?theme=${text}`
+        );
+        const problemJson = await res.json();
+        console.log(problemJson);
+
+        setMessages((prev) => [
+          ...prev,
+          {
+            message: `${
+              problemJson
+                ? problemJson["problemStatement"]
+                : "AIの返答がありません"
+            }`,
+            isUser: false,
+          },
+        ]);
+        setLectureData({
+          problemStatement: problemJson["problemStatement"],
+          modelAnswer: problemJson["modelAnswer"],
+          userAnswer: "",
+          evaluation: "",
+          aiResponse: "",
+        });
+        setLoading(false);
+      } else {
+        const res = await fetch("http://localhost:8000/api/evaluate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            problem_statement: lectureData.problemStatement,
+            model_answer: lectureData.modelAnswer,
+            user_answer: text,
+          }),
+        });
+        const evaluateJson = await res.json();
+        console.log(evaluateJson);
+
+        setMessages((prev) => [
+          ...prev,
+          {
+            message: `${
+              evaluateJson
+                ? `評価：${evaluateJson["evaluation"]}\n
+                コメント：${evaluateJson["ai_response"]}`
+                : "AIの返答がありません"
+            }`,
+            isUser: false,
+          },
+        ]);
+        setLoading(false);
+      }
     }, 1200);
   };
 
@@ -61,9 +119,7 @@ export default function Home() {
           {messages.map((msg, idx) => (
             <ChatMessage key={idx} message={msg.message} isUser={msg.isUser} />
           ))}
-          {loading && (
-            <ChatMessage message="AIが考え中..." />
-          )}
+          {loading && <ChatMessage message="AIが考え中..." />}
           <div ref={chatEndRef} />
         </main>
 
