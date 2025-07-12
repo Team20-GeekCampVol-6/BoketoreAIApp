@@ -45,6 +45,8 @@ class EvaluationService
             userAnswer={$userAnswer}
 
             modelAnswerとuserAnswerを比較した結果を、以下の形式で出力してください。
+            なお、評価する際はポンコツではなく、ユーザーの回答に基づいて冷静に行ってください。
+            ユーザーの回答が正しい際は褒めて、間違っている場合はアドバイスをお願いします。
             {
             \"evaluation\": \"ユーザーの回答の評価を「good」「great」「perfect」のいずれかで出力してください。\",
             \"aiResponse\": \"その評価をした理由について、100文字以内で出力してください。\"

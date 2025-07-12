@@ -19,7 +19,7 @@ class ProblemController extends Controller
      */
     public function generate(Request $request)
     {
-        $theme = '歴史';
+        $theme = $request->input('theme');
         
         // サービスから問題と想定解の配列を受け取る
         $problemData = $this->problemService->generate($theme);
