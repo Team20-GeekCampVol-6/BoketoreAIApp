@@ -9,7 +9,7 @@ type Props = {
 const messageMap: Record<Evaluation, string> = {
   perfect: 'o(`･ω´･+o) ﾄﾞﾔｧ…！',
   great: '（￣＾￣）えっへん',
-  good: '\( *´∀`* )/わーい'
+  good: '＼( *´∀`* )／わーい'
 };
 
 const perfectAnimationVariants = {
