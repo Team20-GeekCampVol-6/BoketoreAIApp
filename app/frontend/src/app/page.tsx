@@ -26,7 +26,27 @@ export default function Home() {
     aiResponse: "",
   });
 
+  const [doyaAnimationState, setDoyaAnimationState] = useState<
+    "hidden" | "visible" | "fading"
+  >("hidden");
+
   const isFinished = lectureData.evaluation !== "";
+
+  useEffect(() => {
+    if (isFinished) {
+      setDoyaAnimationState("visible");
+      const fadeOutTimer = setTimeout(() => {
+        setDoyaAnimationState("fading");
+      }, 1500);
+      const hideTimer = setTimeout(() => {
+        setDoyaAnimationState("hidden");
+      }, 2000);
+      return () => {
+        clearTimeout(fadeOutTimer);
+        clearTimeout(hideTimer);
+      };
+    }
+  }, [isFinished]);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -132,14 +152,20 @@ export default function Home() {
             <ChatMessage key={idx} message={msg.message} isUser={msg.isUser} />
           ))}
 
-          {isFinished && (
-            <DoyaAnimation evaluate={lectureData.evaluation as Evaluation} />
-          )}
-
           {loading && <ChatMessage message="AIが考え中..." />}
           <div ref={chatEndRef} />
         </main>
 
+        {/* ドヤアニメーション */}
+        {
+          <div
+            className={`mb-8 transition-opacity duration-500 ${
+              doyaAnimationState === "fading" ? "opacity-0" : "opacity-100"
+            }`}
+          >
+            <DoyaAnimation evaluate={lectureData.evaluation as Evaluation} />
+          </div>
+        }
         {/* 入力欄 */}
         <div className="w-full">
           <InputForm onSend={handleSend} disabled={loading} />

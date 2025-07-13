@@ -7,9 +7,10 @@ type Props = {
 };
 
 const messageMap: Record<Evaluation, string> = {
-  perfect: "すばらしい！ 🎉",
-  great: "いいね！ 👍",
-  good: "まずまずだね 😊",
+  perfect: "o(`･ω´･+o) ﾄﾞﾔｧ…！",
+  great: "（￣＾￣）えっへん",
+  good: "( *´∀`* )/わーい",
+  bad: "（；^ω^）うーん、もう少し頑張ろう",
 };
 
 const animationVariants = {
@@ -33,7 +34,7 @@ const DoyaAnimation = ({ evaluate }: Props) => {
   return (
     <motion.h1
       key={evaluate}
-      style={{ fontSize: "4rem", fontWeight: "bold" }}
+      className="text-7xl font-bold text-black dark:text-white text-center mb-9"
       variants={animationVariants}
       initial="hidden"
       animate="visible"
