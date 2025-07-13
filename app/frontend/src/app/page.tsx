@@ -157,7 +157,7 @@ export default function Home() {
         </main>
 
         {/* ドヤアニメーション */}
-        {
+        {doyaAnimationState !== "hidden" && (
           <div
             className={`mb-8 transition-opacity duration-500 ${
               doyaAnimationState === "fading" ? "opacity-0" : "opacity-100"
@@ -165,7 +165,7 @@ export default function Home() {
           >
             <DoyaAnimation evaluate={lectureData.evaluation as Evaluation} />
           </div>
-        }
+        )}
         {/* 入力欄 */}
         <div className="w-full">
           <InputForm onSend={handleSend} disabled={loading} />
