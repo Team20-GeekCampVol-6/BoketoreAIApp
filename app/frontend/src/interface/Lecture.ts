@@ -1,4 +1,4 @@
-type Evaluation = "perfect" | "great" | "good";
+type Evaluation = "perfect" | "great" | "good" | "bad";
 
 interface Lecture {
   id: string;
